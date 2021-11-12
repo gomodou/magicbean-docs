@@ -1,8 +1,8 @@
 # magicbean-docs
 
-[![Documentation Status](https://readthedocs.org/projects/modoudocs/badge/?version=latest)](https://modoudocs.readthedocs.io/en/latest/?badge=latest)
+[![Documentation Status](https://readthedocs.org/projects/magicbean/badge/?version=latest)](https://magicbean.readthedocs.io/en/latest/?badge=latest)
 
-[魔豆项目官方文档库](https://modoudocs.readthedocs.io/en/latest/)
+[魔豆项目官方文档库](https://magicbean.readthedocs.io/en/latest/#)
 
 ## 目录
 
