@@ -1,9 +1,6 @@
 Complex ETL
 ************
 
-1. 构建Pipeline
-================
-
 本示例中使用开放数据集 `millionsongdataset <http://millionsongdataset.com/tasteprofile/>`_ 完成一次包含脏数据清理和二值化处理的ETL示例。
 数据集的抽样如下：
 
@@ -44,9 +41,3 @@ b80344d063b5ccb3212f76538f3d9e43d87dca9e                              999999
   :alt: Alternative text   
 
 4. `Entity Identifier` 配置 ``Process`` ，让 ``Entity Type`` 设置为 ``User``，``Column`` 设置为 ``user`` 。一个经过数据清洗和二值化处理的数据集制作完成。
-
-
-2. 处理增量更新情况
-====================
-
-在实际数据场景中，数据每日都会不断增加。
