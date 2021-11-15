@@ -9,7 +9,7 @@ Incremental ETL
 本例中我们使用魔豆系统做增量式更新的演示，尝试“一站式”的解决上述开发流程。
 
 在之前的示例中，我们已经使用 ``Table Loader`` 完成了一次性加载的工作。
-接下来，配置该节点 ``Process`` 里的 ``Load strategy`` 为 ``Incremental load`` 模式，完成增量更新的操作。
+接下来需要配置该节点 ``Process`` 里的 ``Load strategy`` 为 ``Incremental load`` 模式，用于完成增量更新的操作。
 
 在下面示例中将会提供 `原始数据` 和 `更新数据` 分别代表第一次加载的数据集和增量数据集。
 如果你需要跟随本文档测试，需要先将原始数据导入自己的数据库中，然后在魔豆完成第一次计算后，按更新数据去修改源表，以此来模拟源表更新。
@@ -17,7 +17,7 @@ Incremental ETL
 业务库更新的典型场景是处理有 `upsert` 情况的表，下例 `user` 表中主键为 ``id``，这意味着：
 
 - 新用户注册会产生新的记录
-- 旧用户修改会以 ``id`` 为准去更新 ``name`` 和 ``gender``
+- 旧用户修改会更新对应需要变更的记录
 
 1. 构建Pipeline
 =================
@@ -25,7 +25,7 @@ Incremental ETL
 原始数据:
 
 ========= ============ ======== ============ 
-   id        name       gender   updateTime
+   id        name       gender  registeTime 
 ========= ============ ======== ============ 
      1       AAA          F      2021-11-10      
      2       BBB          M      2021-11-10
@@ -35,16 +35,23 @@ Incremental ETL
 配置如下：
 
 1. 首先确保 ``Table Loader`` 节点配置为 ``Incremental load`` 模式
-2. ``Incremental Key`` 选择为 ``updateTime`` 
-3. ``Write mode`` 为 ``Upsert``
+2. 配置 ``Incremental Key`` 选择为 ``registeTime`` ，这项配置需要用户选择传入适合用于做时间分区的字段，类型限定为 `Timestamp` 类型或 `Date` 类型
+3. 配置 ``Write mode`` 为 ``Upsert``， 配置 `upsert` 更新的字段有 ``id/name/gender/registeTime``
 4. 配置完成后 ``Save``， ``Table Loader`` 配置完成
+
+``Table Loader`` 配置过程演示：
+
+.. image:: ../_static/tableloaderexample.gif
+  :width: 600
+  :alt: tableloaderexample
+
 5. 配置 ``Entity Identifier`` 连接 ``Table Loader``，将加载的数据结果转存成魔豆系统可用的数据集
 6. ``Entity Identifier`` 中 ``Entity Type`` 选择 ``User``，``Column`` 选择 ``id``
 
-完成上述步骤后执行 ``Run``，算是完成了数据的第一次加载。
+完成上述步骤后执行 ``Run``，就完成了数据的第一次加载。
 画布中共有两个节点 ``Table Loader`` 和 ``Entity Identifier``，分别预览节点生成的数据结果会发现：
 
-- ``Table Loader`` 中选择的增量字段 ``updateTime`` 清洗为 ``__dt__``，魔豆系统会以 ``__dt__`` 为数据的分区键存储载入的数据
+- ``Table Loader`` 中选择的增量字段 ``registeTime`` 清洗为 ``__dt__``，魔豆系统会以 ``__dt__`` 为数据的分区键存储载入的数据
 - ``Entity Identifier`` 中将 ``id`` 列重命名为 ``__uuid__`` 列，以此作为魔豆系统中的用户标识
 
 
@@ -71,19 +78,19 @@ Incremental ETL
 更新数据：
 
 ========= ============ ======== ============ 
-   id        name       gender   updateTime
+   id        name       gender  registeTime 
 ========= ============ ======== ============ 
      1       AAA          F      2021-11-10      
      2       BBB          M      2021-11-10
-     3       CCC          F      2021-11-11
+     3       CCC          F      2021-11-10
      4       DDD          M      2021-11-11
 ========= ============ ======== ============ 
 
 观察 `更新数据` 发现：
 
-- 用户 ``CCC`` 在新的一天修改了自己的 ``gender``
+- 用户 ``CCC`` 修改了自己的 ``gender``，由原来的 `NA` 更新为 `F`
 - 有新用户 ``DDD`` 注册，产生一行新记录 
 
-源数据发生 `upsert` 的前提下，再次触发pipeline。
-``Run`` 后预览最新生成数据会发现，系统捕捉到了这两处变化，并生成好了最新的数据集。
+在源数据发生 `upsert` 的前提下，手动执行 ``Run`` 再次触发pipeline。
+待 `pipeline` 执行完成后，预览最新生成数据会发现，系统捕捉到了更新和新增后的两处变化，生成好了最新的数据集。
 相比于传统增量数仓开发流程，使用魔豆系统可以更高效的实现同等结果的工作。
