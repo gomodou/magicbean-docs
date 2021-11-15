@@ -18,7 +18,6 @@ Nodes介绍魔豆系统的各节点
    /nodes/Dummy
    /nodes/Explode
    /nodes/JsonFlatten
-   /nodes/LitReplace
    /nodes/Merge
    /nodes/Pivot
    /nodes/Sharding
